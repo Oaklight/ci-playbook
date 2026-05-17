@@ -109,3 +109,15 @@ dev = [
     "complexipy>=5.2.0",
 ]
 ```
+
+## Known complexipy behavior
+
+The `-e`/`--exclude` flag in complexipy ≤ 5.4.1 does **not** exclude files by
+path component — it is effectively a no-op for directory exclusions. The
+`exclude` key in `[tool.complexipy]` similarly has no effect when complexipy
+is invoked with an explicit path argument.
+
+**Workaround**: set `max-complexity-allowed` high enough (e.g. 45) to cover
+vendored or generated code, and rely on code review to keep your own code's
+complexity in check. Alternatively, specify exact files/directories in the
+hook entry instead of a broad `src/`.
