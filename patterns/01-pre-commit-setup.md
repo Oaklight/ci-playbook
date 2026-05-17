@@ -33,11 +33,15 @@ repos:
 
       - id: complexipy
         name: complexipy (complexity check)
-        entry: complexipy src/
+        entry: complexipy src/mypackage tests -e _vendor -mx 15
         language: system
         pass_filenames: false
         always_run: true
 ```
+
+Replace `mypackage` with your actual package name. Specifying the package
+directory (not `src/`) avoids scanning vendored subdirectories; see
+[Known complexipy behavior](#known-complexipy-behavior) below.
 
 ## Variants
 
@@ -117,7 +121,18 @@ path component — it is effectively a no-op for directory exclusions. The
 `exclude` key in `[tool.complexipy]` similarly has no effect when complexipy
 is invoked with an explicit path argument.
 
-**Workaround**: set `max-complexity-allowed` high enough (e.g. 45) to cover
-vendored or generated code, and rely on code review to keep your own code's
-complexity in check. Alternatively, specify exact files/directories in the
-hook entry instead of a broad `src/`.
+**Workaround**: specify the package directory explicitly in the hook entry
+instead of the source root `src/`. This avoids descending into `_vendor/`
+entirely. Pair with `-e _vendor` and a `-mx` cap (max 20, ideally 15):
+
+```yaml
+- id: complexipy
+  name: complexipy (complexity check)
+  entry: complexipy src/mypackage tests -e _vendor -mx 15
+  language: system
+  pass_filenames: false
+  always_run: true
+```
+
+Do **not** raise `max-complexity-allowed` to a high value (e.g. 45) as a
+blanket workaround — that hides real complexity problems in your own code.
