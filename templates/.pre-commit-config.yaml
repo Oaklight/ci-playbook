@@ -8,7 +8,7 @@ repos:
       - id: ruff-format
 
   # ── Local hooks (system tools) ────────────────────────────────────────────
-  # These require ty and complexipy to be installed in your active environment.
+  # These require ty to be installed in your active environment.
   # Run: pip install -e ".[dev]"  (or conda activate <env>)
 
   - repo: local
@@ -22,9 +22,10 @@ repos:
         require_serial: true
         types: [python]
 
+  - repo: https://github.com/rohaquinlop/complexipy-pre-commit
+    rev: v5.1.0
+    hooks:
       - id: complexipy
-        name: complexipy (complexity check)
-        entry: complexipy src/          # adjust path as needed
-        language: system
-        pass_filenames: false
-        always_run: true
+        files: ^src/
+        exclude: ^src/_vendor/
+        args: [-mx, "20"]
