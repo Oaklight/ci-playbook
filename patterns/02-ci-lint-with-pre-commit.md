@@ -5,7 +5,7 @@ Two approaches depending on whether your CI job installs dev deps anyway.
 ## Approach A: `pre-commit/action` (recommended when you install dev deps)
 
 Use the official `pre-commit/action` when the CI job already installs
-project deps (which puts `ty` and `complexipy` on PATH as system hooks need).
+project deps (which puts `ty` on PATH as the system hook needs).
 
 ```yaml
 jobs:
@@ -18,15 +18,24 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies         # needed for ty + complexipy system hooks
+      - name: Install dependencies         # needed for ty system hook
         run: pip install -e ".[dev]"
 
-      - name: Run pre-commit checks
+      - name: Lint (ruff + ty)
         uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: complexipy
+
+      - name: Complexity check (advisory)
+        if: always()
+        run: pre-commit run complexipy --all-files || true
 ```
 
 `pre-commit/action` caches the pre-commit environments automatically (keyed by
 `.pre-commit-config.yaml` hash), so ruff binary downloads are cached across runs.
+
+The `SKIP=complexipy` / separate step pattern keeps complexity visible in CI
+output without failing the build — see [01 — complexipy guidance](01-pre-commit-setup.md#complexipy-complexity-as-a-signal-not-a-gate).
 
 ## Approach B: manual install (no dev deps needed)
 
@@ -44,9 +53,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: pip install pre-commit ty complexipy
+      - run: pip install pre-commit ty
 
-      - run: pre-commit run --all-files
+      - name: Lint (ruff + ty)
+        run: SKIP=complexipy pre-commit run --all-files
+
+      - name: Complexity check (advisory)
+        if: always()
+        run: pre-commit run complexipy --all-files || true
 ```
 
 This is used in the [zerodep reusable workflow](03-reusable-lint-test-workflow.md)

@@ -19,9 +19,14 @@ jobs:
           python-version: "3.12"
 
       # Approach B: self-contained — no project deps needed in lint job
-      - run: pip install pre-commit ty complexipy
+      - run: pip install pre-commit ty
 
-      - run: pre-commit run --all-files
+      - name: Lint (ruff + ty)
+        run: SKIP=complexipy pre-commit run --all-files
+
+      - name: Complexity check (advisory)
+        if: always()
+        run: pre-commit run complexipy --all-files || true
 
   test:
     runs-on: ubuntu-latest

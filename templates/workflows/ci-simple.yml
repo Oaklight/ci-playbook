@@ -17,12 +17,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Install dev deps so system hooks (ty, complexipy) are on PATH
+      # Install dev deps so ty system hook is on PATH
       - name: Install dependencies
         run: pip install -e ".[dev]"
 
-      - name: Run pre-commit checks
+      - name: Lint (ruff + ty)
         uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: complexipy
+
+      - name: Complexity check (advisory)
+        if: always()
+        run: pre-commit run complexipy --all-files || true
 
   test:
     runs-on: ubuntu-latest

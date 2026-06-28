@@ -1,22 +1,22 @@
 repos:
   # ── Ruff: lint + format ──────────────────────────────────────────────────
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: v0.15.20
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
 
   # ── Local hooks (system tools) ────────────────────────────────────────────
-  # These require ty to be installed in your active environment.
+  # ty requires your active environment on PATH.
   # Run: pip install -e ".[dev]"  (or conda activate <env>)
 
   - repo: local
     hooks:
       - id: ty
         name: ty check
-        description: Type check with ty.
-        entry: ty check
+        description: Type check src/ with ty.
+        entry: ty check src/
         language: system
         pass_filenames: false
         require_serial: true

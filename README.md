@@ -15,6 +15,7 @@ the same hooks run locally and in CI.
 | [03 — Reusable lint+test workflow](patterns/03-reusable-lint-test-workflow.md) | `workflow_call` to share lint+test across CI and release |
 | [04 — Release workflow (CalVer)](patterns/04-release-workflow.md) | Automated tagging, version bumping, GitHub Release creation |
 | [05 — Dynamic test-dep installation](patterns/05-dynamic-deps.md) | Auto-detect optional extras from `pyproject.toml` |
+| [06 — Version maintenance](patterns/06-version-maintenance.md) | Keeping this playbook's tool versions up to date |
 
 ## Templates
 
@@ -43,6 +44,6 @@ templates/
 ## Philosophy
 
 - `pre-commit run --all-files` is the canonical lint gate — not raw tool invocations
-- System hooks (`ty`, `complexipy`) need the project virtualenv on `PATH`; install dev deps before running
-- CI uses `pre-commit/action@v3.0.1` for repos that already install dev deps, or `pip install pre-commit ty complexipy && pre-commit run --all-files` for simpler setups
+- `ty` is a system hook — it needs the project virtualenv on `PATH`; `ruff` and `complexipy` use official pre-commit repos with self-managed binaries
+- CI uses `pre-commit/action@v3.0.1` for repos that already install dev deps, or `pip install pre-commit ty && pre-commit run --all-files` for simpler setups
 - Test jobs are always separate from lint — fail fast on lint before spending time on tests

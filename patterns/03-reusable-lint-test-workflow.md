@@ -35,8 +35,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install pre-commit ty complexipy
-      - run: pre-commit run --all-files
+      - run: pip install pre-commit ty
+      - name: Lint (ruff + ty)
+        run: SKIP=complexipy pre-commit run --all-files
+      - name: Complexity check (advisory)
+        if: always()
+        run: pre-commit run complexipy --all-files || true
 
   test:
     runs-on: ubuntu-latest
